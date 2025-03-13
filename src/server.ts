@@ -121,18 +121,9 @@ function handleAction(action: string) {
               (err) => {
                 if (err) {
                   console.error('Error inserting into role:', err);
-                } else {
-                  console.log(`Role: '${title}' added successfully`);
-
-                  pool.query('SELECT * FROM role', (err, result) => {
-                    if (err) {
-                      console.error('Error fetching departments:', err);
-                    } else {
-                      console.table(result.rows);
-                    }
+                } 
                     currentDatabase();
-                  });
-                }
+                 
               }
             );
           });
@@ -290,13 +281,11 @@ function handleAction(action: string) {
 }
 async function addDepartment(){
   try {
-     pool.query('SELECT * FROM department', async (err, result) => {
+     pool.query('SELECT * FROM department', async (err, _result) => {
     if (err) {
       console.error('Error fetching departments:', err);
-    } else {
-      console.log('\n Current Departments: \n');
-      console.table(result.rows);
-    }
+    } 
+   
 
     const answers: DepartmentAnswers = await inquirer.prompt([
       {
@@ -307,7 +296,7 @@ async function addDepartment(){
     ])
 
       const { New_Department } = answers;
-      console.log('New_Department:', New_Department);
+   
       pool.query(
         'INSERT INTO department (name) VALUES ($1) RETURNING *',
         [New_Department],
@@ -317,11 +306,9 @@ async function addDepartment(){
           } else {
             console.log(`Department: '${New_Department}' added successfully`);
 
-            pool.query('SELECT * FROM department', (err, result) => {
+            pool.query('SELECT * FROM department', (err, _result) => {
               if (err) {
                 console.error('Error fetching departments:', err);
-              } else {
-                console.table(result.rows);
               }
               currentDatabase();
             });
@@ -337,24 +324,9 @@ async function addDepartment(){
 }
 
 function currentDatabase() {
-  pool.query(`
-      SELECT  
-        *
-      FROM 
-        department 
-      JOIN 
-        role ON department.id = role.department_id 
-      JOIN 
-        employee ON role.id = employee.role_id;`, (err, result) => {
-    if (err) {
-      console.error('Error fetching Data:', err);
-    } else {
-      console.log('\n --------------------------------------');
-      console.table(result.rows);
-      console.log('-------------------------------------- \n');
-    }
+
     askquestions();
-  });
+  
 }
 
 currentDatabase();
